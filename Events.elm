@@ -1,9 +1,9 @@
 module Events where
 
+import Mouse
+import Random exposing (Seed)
 import Signal exposing (..)
 import Time exposing (Time)
-import Random exposing (Seed)
-import Touch
 import Window
 
 import Scrap exposing (Scrap)
@@ -24,13 +24,12 @@ event =
 input : Signal (Time, (Int, Int))
 input =
   let delta = (\ t -> t / 10) <~ (Time.fps 120)
-  in Signal.sampleOn delta <| (,) <~ delta ~ relativeTap
+  in  (,) <~ delta ~ (Signal.sampleOn Mouse.isDown relativeMousePosition)
 
-relativeTap : Signal (Int, Int)
-relativeTap =
+relativeMousePosition : Signal (Int, Int)
+relativeMousePosition =
   let windowCenter = center <~ Window.dimensions
-      taps = (\ {x,y} -> (x,y)) <~ Touch.taps
-  in  translate <~ windowCenter ~ taps
+  in  translate <~ windowCenter ~ Mouse.position
 
 spawn : Signal Scrap
 spawn =
@@ -43,4 +42,3 @@ randomPoint a =
       randY = Random.int 0 800
       (pair, _) = Random.generate (Random.pair randX randY) (seed a)
   in  pair
-

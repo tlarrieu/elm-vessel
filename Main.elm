@@ -37,8 +37,7 @@ update event game  =
           distance a b = sqrt (toFloat ((a.x - b.x)^2 + (a.y - b.y)^2))
           hit scrap = (distance vessel scrap) < vessel.radius + scrap.radius
           scraps = List.filter (not << hit) game.scraps
-      in
-          { game
+      in  { game
           | vessel <- vessel
           , scraps <- scraps }
     Spawn scrap ->
