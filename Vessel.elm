@@ -5,8 +5,8 @@ import Graphics.Collage exposing (..)
 import Time exposing (Time)
 
 type alias Vessel =
-  { x: Int
-  , y: Int
+  { x: Float
+  , y: Float
   , vx: Float
   , vy: Float
   , speed: Float
@@ -29,22 +29,22 @@ default =
 
 --| Update |--------------------------------------------------------------------
 
-update : (Time, (Int, Int)) -> Vessel -> Vessel
+update : (Time, (Float, Float)) -> Vessel -> Vessel
 update (dt, position) vessel =
   vessel
   |> updateVelocity position
   |> updatePosition dt
 
-speed : (Int, Int) -> Vessel -> Float
+speed : (Float, Float) -> Vessel -> Float
 speed (tx, ty) {x, y, speed} =
   let distinct a b = (abs <| a - b) >= 5
       isMoving = distinct tx x || distinct ty y
   in  if isMoving then speed else 0
 
-updateVelocity : (Int, Int) -> Vessel -> Vessel
+updateVelocity : (Float, Float) -> Vessel -> Vessel
 updateVelocity (tx, ty) ({x,y} as vessel) =
   let v = speed (tx, ty) vessel
-      diff a b = toFloat (a - b)
+      diff a b = (a - b)
       α = atan2 (diff ty y) (diff tx x)
   in  { vessel
       | vx <- v * cos α
@@ -52,7 +52,7 @@ updateVelocity (tx, ty) ({x,y} as vessel) =
 
 updatePosition : Time -> Vessel -> Vessel
 updatePosition dt ({x,y,vx,vy} as vessel) =
-  let shift a b = round <| (toFloat a) + dt * b
+  let shift a b = a + dt * b
   in  { vessel
       | x <- shift x vx
       , y <- shift y vy }
@@ -68,7 +68,4 @@ draw vessel =
       form =
         collage size size [ color, stroke ]
         |> toForm
-  in
-      form
-      |> alpha 0.8
-      |> move (toFloat vessel.x, toFloat vessel.y)
+  in  form |> alpha 0.8 |> move (vessel.x, vessel.y)

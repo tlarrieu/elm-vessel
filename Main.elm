@@ -32,9 +32,9 @@ defaultGame =
 update : Event -> Game -> Game
 update event game  =
   case event of
-    Move (dt, point) ->
-      let vessel = Vessel.update (dt, point) game.vessel
-          distance a b = sqrt (toFloat ((a.x - b.x)^2 + (a.y - b.y)^2))
+    Move (dt, (x,y)) ->
+      let vessel = Vessel.update (dt, (toFloat x, toFloat y)) game.vessel
+          distance a b = sqrt ((a.x - b.x)^2 + (a.y - b.y)^2)
           hit scrap = (distance vessel scrap) < vessel.radius + scrap.radius
           scraps = List.filter (not << hit) game.scraps
       in  { game

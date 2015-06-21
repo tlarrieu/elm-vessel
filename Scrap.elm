@@ -6,8 +6,8 @@ import Graphics.Collage exposing (..)
 --| Model |---------------------------------------------------------------------
 
 type alias Scrap =
-  { x: Int
-  , y: Int
+  { x: Float
+  , y: Float
   , color: Color
   , radius: Float
   , strike: Float }
@@ -20,9 +20,8 @@ default =
   , radius=20
   , strike=2 }
 
-new : (Int, Int) -> Scrap
-new (x', y') =
-  { default | x <- x', y <- y' }
+new : (Float, Float) -> Scrap
+new (x', y') = { default | x <- x', y <- y' }
 
 --| Update |--------------------------------------------------------------------
 
@@ -37,7 +36,6 @@ draw scrap =
       form =
         collage size size [ color, stroke ]
         |> toForm
-  in
-      form
+  in  form
       |> alpha 0.8
-      |> move (toFloat scrap.x, toFloat scrap.y)
+      |> move (scrap.x, scrap.y)

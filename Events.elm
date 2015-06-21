@@ -35,10 +35,10 @@ spawn : Signal Scrap
 spawn =
   (\i -> Scrap.new <| randomPoint <| round i) <~  Time.every (Time.second * 2)
 
-randomPoint : Int -> (Int, Int)
+randomPoint : Int -> (Float, Float)
 randomPoint a =
-  let seed i = Random.initialSeed i
-      randX = Random.int 0 1000
-      randY = Random.int 0 800
-      (pair, _) = Random.generate (Random.pair randX randY) (seed a)
+  let seed = Random.initialSeed a
+      randX = Random.float 0 1000
+      randY = Random.float 0 800
+      (pair, _) = Random.generate (Random.pair randX randY) seed
   in  pair
