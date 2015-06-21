@@ -13,8 +13,8 @@ default =
   { x=-100
   , y=-100
   , color=rgb 255 0 190
-  , radius=20
-  , strike=2 }
+  , radius=15
+  , strike=1 }
 
 new : (Float, Float) -> Scrap
 new (x', y') = { default | x <- x', y <- y' }

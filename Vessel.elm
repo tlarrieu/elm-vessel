@@ -20,8 +20,8 @@ default =
   , vx=0
   , vy=0
   , speed=5
-  , radius=30
-  , strike=4
+  , radius=20
+  , strike=2
   , color=rgb 255 167 0 }
 
 --| Update |--------------------------------------------------------------------
