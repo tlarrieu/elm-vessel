@@ -1,4 +1,3 @@
-import Debug exposing (watch, watchSummary)
 -- Libraries
 import Color exposing (rgb)
 import Graphics.Collage exposing (..)
