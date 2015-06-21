@@ -8,10 +8,11 @@ import Time exposing (Time)
 import Window
 
 -- Local imports
-import Scrap exposing (Scrap)
-import Vessel exposing (Vessel)
+import Drawable exposing (StrokeCircle)
 import Events exposing (Event(..), event)
+import Scrap exposing (Scrap)
 import Utils exposing (center, translate)
+import Vessel exposing (Vessel)
 
 --| Model |---------------------------------------------------------------------
 
@@ -52,8 +53,8 @@ scene (w,h) game =
   let forms =
         List.concat
           [ [drawBackground (w, h)]
-          , List.map Scrap.draw game.scraps
-          , [Vessel.draw game.vessel] ]
+          , List.map Drawable.draw game.scraps
+          , [Drawable.draw game.vessel] ]
       pos = middle
   in  container w h pos <| collage w h forms
 

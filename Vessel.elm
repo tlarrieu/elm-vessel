@@ -1,18 +1,15 @@
 module Vessel where
 
 import Color exposing (Color, rgb)
+import Drawable exposing (StrokeCircle)
 import Graphics.Collage exposing (..)
 import Time exposing (Time)
 
-type alias Vessel =
-  { x: Float
-  , y: Float
-  , vx: Float
+type alias Moving =
+  { vx: Float
   , vy: Float
-  , speed: Float
-  , color: Color
-  , radius: Float
-  , strike: Float }
+  , speed: Float }
+type alias Vessel = StrokeCircle Moving
 
 --| Model |---------------------------------------------------------------------
 
@@ -56,16 +53,3 @@ updatePosition dt ({x,y,vx,vy} as vessel) =
   in  { vessel
       | x <- shift x vx
       , y <- shift y vy }
-
---| View |----------------------------------------------------------------------
-
-draw : Vessel -> Form
-draw vessel =
-  let size = round <| (vessel.radius + 2) * 2 + vessel.strike
-      shape = circle vessel.radius
-      color =  filled vessel.color shape
-      stroke = outlined { defaultLine | width <- vessel.strike } shape
-      form =
-        collage size size [ color, stroke ]
-        |> toForm
-  in  form |> alpha 0.8 |> move (vessel.x, vessel.y)
