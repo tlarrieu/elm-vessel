@@ -2,27 +2,22 @@ module Vessel where
 
 import Color exposing (Color, rgb)
 import Drawable exposing (StrokeCircle)
-import Graphics.Collage exposing (..)
+import Math.Vector2 exposing (..)
 import Time exposing (Time)
 
-type alias Moving =
-  { vx: Float
-  , vy: Float
-  , speed: Float }
+type alias Moving = { velocity : Vec2 , speed: Float }
 type alias Vessel = StrokeCircle Moving
 
 --| Model |---------------------------------------------------------------------
 
 default : Vessel
 default =
-  { x=0
-  , y=0
-  , vx=0
-  , vy=0
-  , speed=5
-  , radius=20
-  , strike=2
-  , color=rgb 255 167 0 }
+  { position = vec2 0 0
+  , velocity = vec2 0 0
+  , speed = 5
+  , radius = 20
+  , stroke = 2
+  , color = rgb 255 167 0 }
 
 --| Update |--------------------------------------------------------------------
 
@@ -32,24 +27,16 @@ update (dt, position) vessel =
   |> updateVelocity position
   |> updatePosition dt
 
-speed : (Float, Float) -> Vessel -> Float
-speed (tx, ty) {x, y, speed} =
-  let distinct a b = (abs <| a - b) >= 5
-      isMoving = distinct tx x || distinct ty y
-  in  if isMoving then speed else 0
-
 updateVelocity : (Float, Float) -> Vessel -> Vessel
-updateVelocity (tx, ty) ({x,y} as vessel) =
-  let v = speed (tx, ty) vessel
-      diff a b = (a - b)
-      α = atan2 (diff ty y) (diff tx x)
-  in  { vessel
-      | vx <- v * cos α
-      , vy <- v * sin α }
+updateVelocity (x, y) ({position, speed} as vessel) =
+  let destination = vec2 x y
+      isMoving = distance position destination >= 5
+      actualSpeed = if isMoving then speed else 0
+      (b, a) =  destination `sub` position |> toTuple
+      α = atan2 a b
+  in  { vessel | velocity <- scale actualSpeed (fromTuple (cos α, sin α)) }
 
 updatePosition : Time -> Vessel -> Vessel
-updatePosition dt ({x,y,vx,vy} as vessel) =
-  let shift a b = a + dt * b
-  in  { vessel
-      | x <- shift x vx
-      , y <- shift y vy }
+updatePosition dt ({position, velocity} as vessel) =
+  let velocity' = scale dt velocity
+  in  { vessel | position <- position `add` velocity' }

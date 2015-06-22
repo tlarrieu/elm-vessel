@@ -2,6 +2,7 @@
 import Color exposing (rgb)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
+import Math.Vector2 exposing (distance)
 import Signal exposing (..)
 import Time exposing (Time)
 import Window
@@ -34,8 +35,7 @@ update event game  =
   case event of
     Move (dt, (x,y)) ->
       let vessel = Vessel.update (dt, (toFloat x, toFloat y)) game.vessel
-          distance a b = sqrt ((a.x - b.x)^2 + (a.y - b.y)^2)
-          hit scrap = (distance vessel scrap) < vessel.radius + scrap.radius
+          hit scrap = (distance vessel.position scrap.position) < vessel.radius + scrap.radius
           scraps = List.filter (not << hit) game.scraps
       in  { game
           | vessel <- vessel

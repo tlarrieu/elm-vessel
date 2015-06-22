@@ -2,24 +2,24 @@ module Drawable where
 
 import Color exposing (Color, rgb)
 import Graphics.Collage exposing (..)
+import Math.Vector2 exposing (Vec2, toTuple)
 
 type alias StrokeCircle a =
   { a
-  | x: Float
-  , y: Float
+  | position : Vec2
   , color: Color
   , radius: Float
-  , strike: Float }
+  , stroke: Float }
 
 draw : StrokeCircle a -> Form
-draw drawable =
-  let size = round <| (drawable.radius + 2) * 2 + drawable.strike
-      shape = circle drawable.radius
-      color =  filled drawable.color shape
-      stroke = outlined { defaultLine | width <- drawable.strike } shape
+draw { position, color, radius, stroke } =
+  let size = round <| (radius + 2) * 2 + stroke
+      shape = circle radius
+      color' =  filled color shape
+      stroke' = outlined { defaultLine | width <- stroke } shape
       form =
-        collage size size [ color, stroke ]
+        collage size size [ color', stroke' ]
         |> toForm
   in  form
       |> alpha 0.8
-      |> move (drawable.x, drawable.y)
+      |> move (toTuple position)
