@@ -26,20 +26,22 @@ update : (Time, Vec2) -> Vessel -> Vessel
 update (dt, destination) vessel =
   vessel
   |> updateVelocity destination
-  |> updatePosition dt
+  |> updatePosition dt destination
 
 updateVelocity : Vec2 -> Vessel -> Vessel
 updateVelocity destination ({position, speed} as vessel) =
-  let isMoving = distance position destination >= 5
-      actualSpeed = if isMoving then speed else 0
-      (b, a) =  destination `sub` position |> toTuple
+  let (b, a) =  destination `sub` position |> toTuple
       α = atan2 a b
-  in  { vessel | velocity <- scale actualSpeed (fromTuple (cos α, sin α)) }
+  in  { vessel | velocity <- scale speed (fromTuple (cos α, sin α)) }
 
-updatePosition : Time -> Vessel -> Vessel
-updatePosition dt ({position, velocity} as vessel) =
+updatePosition : Time -> Vec2 -> Vessel -> Vessel
+updatePosition dt destination ({position, velocity} as vessel) =
   let velocity' = scale dt velocity
-  in  { vessel | position <- position `add` velocity' }
+      position' = position `add` velocity'
+      deltaPos = position' `sub` position |> length
+      deltaDest = destination `sub` position |> length
+      position'' = if deltaPos > deltaDest then destination else position'
+  in  { vessel | position <- position'' }
 
 --| View |----------------------------------------------------------------------
 draw : Vessel -> Form
