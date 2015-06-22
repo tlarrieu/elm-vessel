@@ -22,16 +22,15 @@ default =
 
 --| Update |--------------------------------------------------------------------
 
-update : (Time, (Float, Float)) -> Vessel -> Vessel
-update (dt, position) vessel =
+update : (Time, Vec2) -> Vessel -> Vessel
+update (dt, destination) vessel =
   vessel
-  |> updateVelocity position
+  |> updateVelocity destination
   |> updatePosition dt
 
-updateVelocity : (Float, Float) -> Vessel -> Vessel
-updateVelocity (x, y) ({position, speed} as vessel) =
-  let destination = vec2 x y
-      isMoving = distance position destination >= 5
+updateVelocity : Vec2 -> Vessel -> Vessel
+updateVelocity destination ({position, speed} as vessel) =
+  let isMoving = distance position destination >= 5
       actualSpeed = if isMoving then speed else 0
       (b, a) =  destination `sub` position |> toTuple
       α = atan2 a b

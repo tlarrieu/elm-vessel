@@ -2,7 +2,7 @@
 import Color exposing (rgb)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
-import Math.Vector2 exposing (distance)
+import Math.Vector2 exposing (distance, fromTuple)
 import Signal exposing (..)
 import Time exposing (Time)
 import Window
@@ -33,7 +33,7 @@ update : Event -> Game -> Game
 update event game  =
   case event of
     Move (dt, (x,y)) ->
-      let destination = (toFloat x, toFloat y)
+      let destination = fromTuple (toFloat x, toFloat y)
           vessel = Vessel.update (dt, destination) game.vessel
           dist = distance vessel.position
           rad = (+) vessel.radius
