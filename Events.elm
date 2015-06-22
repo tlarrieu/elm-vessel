@@ -33,7 +33,7 @@ relativeMousePosition =
 
 spawn : Signal Scrap
 spawn =
-  (\i -> Scrap.new <| randomPoint <| round i) <~  Time.every (Time.second * 2)
+  (\i -> Scrap.new <| randomPoint <| round i) <~  Time.every (Time.second)
 
 randomPoint : Int -> (Float, Float)
 randomPoint a =

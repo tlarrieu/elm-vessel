@@ -8,7 +8,6 @@ import Time exposing (Time)
 import Window
 
 -- Local imports
-import Drawable exposing (StrokeCircle)
 import Events exposing (Event(..), event)
 import Scrap exposing (Scrap)
 import Utils exposing (center, translate)
@@ -41,7 +40,7 @@ update event game  =
           | vessel <- vessel
           , scraps <- scraps }
     Spawn scrap ->
-      let overcrowded = (List.length game.scraps) >= 10
+      let overcrowded = (List.length game.scraps) >= 100
       in  if | overcrowded -> game
              | otherwise -> { game | scraps <- scrap :: game.scraps }
 
@@ -52,8 +51,8 @@ scene (w,h) game =
   let forms =
         List.concat
           [ [drawBackground (w, h)]
-          , List.map Drawable.draw game.scraps
-          , [Drawable.draw game.vessel] ]
+          , List.map Scrap.draw game.scraps
+          , [Vessel.draw game.vessel] ]
       pos = middle
   in  container w h pos <| collage w h forms
 

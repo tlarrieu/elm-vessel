@@ -1,12 +1,13 @@
 module Vessel where
 
 import Color exposing (Color, rgb)
-import Drawable exposing (StrokeCircle)
+import Drawing exposing (..)
+import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (..)
 import Time exposing (Time)
 
 type alias Moving = { velocity : Vec2 , speed: Float }
-type alias Vessel = StrokeCircle Moving
+type alias Vessel = Circle Moving
 
 --| Model |---------------------------------------------------------------------
 
@@ -40,3 +41,7 @@ updatePosition : Time -> Vessel -> Vessel
 updatePosition dt ({position, velocity} as vessel) =
   let velocity' = scale dt velocity
   in  { vessel | position <- position `add` velocity' }
+
+--| View |----------------------------------------------------------------------
+draw : Vessel -> Form
+draw = drawCircle

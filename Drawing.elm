@@ -1,18 +1,18 @@
-module Drawable where
+module Drawing where
 
 import Color exposing (Color, rgb)
 import Graphics.Collage exposing (..)
 import Math.Vector2 exposing (Vec2, toTuple)
 
-type alias StrokeCircle a =
+type alias Circle a =
   { a
   | position : Vec2
   , color: Color
   , radius: Float
   , stroke: Float }
 
-draw : StrokeCircle a -> Form
-draw { position, color, radius, stroke } =
+drawCircle : Circle a -> Form
+drawCircle { position, color, radius, stroke } =
   let size = round <| (radius + 2) * 2 + stroke
       shape = circle radius
       color' =  filled color shape
