@@ -33,8 +33,11 @@ update : Event -> Game -> Game
 update event game  =
   case event of
     Move (dt, (x,y)) ->
-      let vessel = Vessel.update (dt, (toFloat x, toFloat y)) game.vessel
-          hit scrap = (distance vessel.position scrap.position) < vessel.radius + scrap.radius
+      let destination = (toFloat x, toFloat y)
+          vessel = Vessel.update (dt, destination) game.vessel
+          dist = distance vessel.position
+          rad = (+) vessel.radius
+          hit scrap = dist scrap.position < rad scrap.radius
           scraps = List.filter (not << hit) game.scraps
       in  { game
           | vessel <- vessel
