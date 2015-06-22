@@ -23,7 +23,7 @@ event =
 
 input : Signal (Time, (Int, Int))
 input =
-  let delta = (\ t -> t / 10) <~ (Time.fps 120)
+  let delta = (\ t -> t / 10) <~ (Time.fps 60)
   in  (,) <~ delta ~ (Signal.sampleOn Mouse.isDown relativeMousePosition)
 
 relativeMousePosition : Signal (Int, Int)
@@ -38,7 +38,7 @@ spawn =
 randomPoint : Int -> (Float, Float)
 randomPoint a =
   let seed = Random.initialSeed a
-      randX = Random.float 0 1000
-      randY = Random.float 0 800
+      randX = Random.float -500 500
+      randY = Random.float -400 400
       (pair, _) = Random.generate (Random.pair randX randY) seed
   in  pair
