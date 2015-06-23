@@ -1,12 +1,13 @@
-module Vessel where
+module Vessel (Vessel, default, update, draw) where
 
 import Color exposing (rgb)
 import Drawing exposing (Circle, drawCircle)
 import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (..)
+import Maybe exposing (..)
 import Time exposing (Time)
 
-import Movement exposing (Moving, Positionned, moveTo)
+import Movement exposing (Moving, Positionned, move)
 
 --| Model |---------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ default =
   { position = vec2 0 0
   , velocity = vec2 0 0
   , speed = 5
+  , destination = Nothing
   , radius = 20
   , stroke = 2
   , color = rgb 255 167 0 }
@@ -24,8 +26,11 @@ default =
 --| Update |--------------------------------------------------------------------
 
 update : (Time, Vec2) -> Vessel -> Vessel
-update = Movement.moveTo
+update (dt, dest) vessel =
+  { vessel | destination <- Just dest }
+  |> Movement.move dt
 
 --| View |----------------------------------------------------------------------
+
 draw : Circle -> Form
 draw = drawCircle
