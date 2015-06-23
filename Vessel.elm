@@ -6,10 +6,11 @@ import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (..)
 import Time exposing (Time)
 
+import Movement exposing (Moving, Positionned, moveTo)
+
 --| Model |---------------------------------------------------------------------
 
-type alias Moving = { velocity : Vec2 , speed: Float }
-type alias Vessel = Circle Moving
+type alias Vessel = Moving Circle
 
 default : Vessel
 default =
@@ -23,26 +24,8 @@ default =
 --| Update |--------------------------------------------------------------------
 
 update : (Time, Vec2) -> Vessel -> Vessel
-update (dt, destination) vessel =
-  vessel
-  |> updateVelocity destination
-  |> updatePosition dt destination
-
-updateVelocity : Vec2 -> Vessel -> Vessel
-updateVelocity destination ({position, speed} as vessel) =
-  let (b, a) =  destination `sub` position |> toTuple
-      α = atan2 a b
-  in  { vessel | velocity <- scale speed (fromTuple (cos α, sin α)) }
-
-updatePosition : Time -> Vec2 -> Vessel -> Vessel
-updatePosition dt destination ({position, velocity} as vessel) =
-  let velocity' = scale dt velocity
-      position' = position `add` velocity'
-      deltaPos = position' `sub` position |> length
-      deltaDest = destination `sub` position |> length
-      position'' = if deltaPos > deltaDest then destination else position'
-  in  { vessel | position <- position'' }
+update = Movement.moveTo
 
 --| View |----------------------------------------------------------------------
-draw : Vessel -> Form
+draw : Circle -> Form
 draw = drawCircle

@@ -7,7 +7,7 @@ import Math.Vector2 exposing (vec2)
 
 --| Model |---------------------------------------------------------------------
 
-type alias Scrap = Circle {}
+type alias Scrap = Circle
 
 default : Scrap
 default =
