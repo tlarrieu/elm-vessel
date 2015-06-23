@@ -24,7 +24,7 @@ event =
 input : Signal (Time, (Int, Int))
 input =
   let delta = (\ t -> t / 10) <~ (Time.fps 60)
-  in  (,) <~ delta ~ (Signal.sampleOn Mouse.isDown relativeMousePosition)
+  in  (,) <~ delta ~ (Signal.sampleOn Mouse.clicks relativeMousePosition)
 
 relativeMousePosition : Signal (Int, Int)
 relativeMousePosition =
