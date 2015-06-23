@@ -14,7 +14,10 @@ import Vessel exposing (Vessel)
 
 --| Model |---------------------------------------------------------------------
 
-type Event = Move (Time, (Int, Int)) | Spawn Float
+type Event =
+  Move (Int, Int)
+  | Refresh Time
+  | Spawn Float
 type alias Dimension = (Int, Int)
 type alias Game = { vessel: Vessel , scraps: List Scrap }
 
@@ -30,12 +33,18 @@ update : Event -> Game -> Game
 update event game  =
   case event of
     Move input -> move input game
+    Refresh t -> refresh t game
     Spawn i -> spawn i game
 
-move : (Time, (Int, Int)) -> Game -> Game
-move (dt, (x, y)) game =
+move : (Int, Int) -> Game -> Game
+move (x, y) game =
   let destination = fromTuple (toFloat x, toFloat y)
-      vessel = Vessel.update (dt, destination) game.vessel
+  in  { game
+      | vessel <- Vessel.setDestination destination game.vessel }
+
+refresh : Time -> Game -> Game
+refresh dt game =
+  let vessel = Vessel.update dt game.vessel
       dist = distance vessel.position
       rad = (+) vessel.radius
       hit scrap = dist scrap.position < rad scrap.radius

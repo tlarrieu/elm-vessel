@@ -1,4 +1,4 @@
-module Vessel (Vessel, default, update, draw) where
+module Vessel (Vessel, default, update, draw, setDestination) where
 
 import Color exposing (rgb)
 import Drawing exposing (Circle, drawCircle)
@@ -11,7 +11,7 @@ import Movement exposing (Moving, Positionned, move)
 
 --| Model |---------------------------------------------------------------------
 
-type alias Vessel = Moving Circle
+type alias Vessel = Moving (Circle {})
 
 default : Vessel
 default =
@@ -25,12 +25,13 @@ default =
 
 --| Update |--------------------------------------------------------------------
 
-update : (Time, Vec2) -> Vessel -> Vessel
-update (dt, dest) vessel =
-  { vessel | destination <- Just dest }
-  |> Movement.move dt
+update : Time -> Vessel -> Vessel
+update dt vessel = Movement.move dt vessel
+
+setDestination : Vec2 -> Vessel -> Vessel
+setDestination = Movement.setDestination
 
 --| View |----------------------------------------------------------------------
 
-draw : Circle -> Form
+draw : Vessel -> Form
 draw = drawCircle

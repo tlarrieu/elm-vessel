@@ -1,4 +1,4 @@
-module Movement (Moving, Positionned, move) where
+module Movement (Moving, Positionned, move, setDestination) where
 
 import Math.Vector2 exposing (..)
 import Maybe exposing (..)
@@ -10,6 +10,13 @@ type alias Moving a =
   , speed : Float
   , destination : Maybe Vec2 }
 type alias Positionned a = { a | position : Vec2 }
+
+setDestination : Vec2 -> Moving (Positionned a) -> Moving (Positionned a)
+setDestination destination ({position} as unit) =
+  let destination' =
+    if | position == destination -> Nothing
+       | otherwise -> Just destination
+  in { unit | destination <- destination' }
 
 move : Time -> Moving (Positionned a) -> Moving (Positionned a)
 move dt ({destination} as unit) =
