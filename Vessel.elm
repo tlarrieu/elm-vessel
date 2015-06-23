@@ -1,15 +1,15 @@
 module Vessel where
 
-import Color exposing (Color, rgb)
-import Drawing exposing (..)
+import Color exposing (rgb)
+import Drawing exposing (Circle, drawCircle)
 import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (..)
 import Time exposing (Time)
 
+--| Model |---------------------------------------------------------------------
+
 type alias Moving = { velocity : Vec2 , speed: Float }
 type alias Vessel = Circle Moving
-
---| Model |---------------------------------------------------------------------
 
 default : Vessel
 default =

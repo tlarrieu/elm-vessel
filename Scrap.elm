@@ -1,7 +1,7 @@
 module Scrap where
 
-import Color exposing (Color, rgb)
-import Drawing exposing (..)
+import Color exposing (rgb)
+import Drawing exposing (Circle, drawCircle)
 import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (vec2)
 
