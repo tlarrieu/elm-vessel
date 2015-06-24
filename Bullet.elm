@@ -28,8 +28,8 @@ new pos dest =
   { default | position <- pos }
   |> setDestination dest
 
-dead : Bullet -> Bool
-dead bullet =
+reachedTarget : Bullet -> Bool
+reachedTarget bullet =
   case bullet.destination of
     Just dest -> False
     Nothing -> True

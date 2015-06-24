@@ -8,10 +8,11 @@ import Signal exposing (..)
 import Time exposing (Time)
 import Window
 
+import Bullet exposing (Bullet)
+import Movement
 import Scrap exposing (Scrap)
 import Utils exposing (center, translate, randomPoint)
 import Vessel exposing (Vessel)
-import Bullet exposing (Bullet)
 
 --| Model |---------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ background = (rgb 174 238 238)
 default =
   { vessel = Vessel.default
   , scraps = []
-  , bullets = []}
+  , bullets = [] }
 
 --| Update |--------------------------------------------------------------------
 
@@ -58,17 +59,19 @@ move (x, y) game =
 refresh : Time -> Game -> Game
 refresh dt ({vessel, scraps, bullets } as game) =
   let vessel' = Vessel.update dt vessel
-      hit bullet = List.any (Scrap.collision bullet) scraps
-      bullets' = List.map (Bullet.update dt) <| List.filter (not << hit) bullets
-      bullets'' = List.filter (not << Bullet.dead) bullets'
-      hit' scrap = List.any (\bullet -> Scrap.collision bullet scrap) bullets
-      (hScraps, nhScraps) = List.partition (hit') scraps
-      hScraps' = List.map (Scrap.damage) hScraps
-      hScraps'' = List.filter (not << Scrap.dead) hScraps'
+      bullets' =
+        List.filter (not << Bullet.reachedTarget)
+        <| List.map (Bullet.update dt)
+        <| List.filter (not << Movement.anyCollision scraps) bullets
+      (hScraps, nhScraps) = List.partition (Movement.anyCollision bullets) scraps
+      hScraps' =
+        List.filter (not << Scrap.dead)
+        <| List.map (Scrap.damage) hScraps
+      scraps' = List.append nhScraps hScraps'
   in  { game
       | vessel <- vessel'
-      , bullets <- bullets''
-      , scraps <- List.append nhScraps hScraps'' }
+      , bullets <- bullets'
+      , scraps <- scraps' }
 
 spawn : Float -> Game -> Game
 spawn i game =

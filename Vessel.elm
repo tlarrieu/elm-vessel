@@ -1,4 +1,4 @@
-module Vessel (Vessel, default, update, draw, setDestination) where
+module Vessel where
 
 import Color exposing (rgb)
 import Drawing exposing (Circle, drawCircle)

@@ -1,4 +1,10 @@
-module Movement (Moving, Positionned, move, setDestination) where
+module Movement
+  ( Moving
+  , Positionned
+  , anyCollision
+  , collision
+  , move
+  , setDestination ) where
 
 import Math.Vector2 exposing (..)
 import Maybe exposing (..)
@@ -10,6 +16,13 @@ type alias Moving a =
   , speed : Float
   , destination : Maybe Vec2 }
 type alias Positionned a = { a | position : Vec2 }
+type alias Collidable a = { a | position : Vec2, radius : Float }
+
+collision : Collidable a -> Collidable b -> Bool
+collision c1 c2 = distance c1.position c2.position < c1.radius + c2.radius
+
+anyCollision : List (Collidable t) -> Collidable u -> Bool
+anyCollision list c = List.any (collision c) list
 
 setDestination : Vec2 -> Moving (Positionned a) -> Moving (Positionned a)
 setDestination destination ({position} as unit) =

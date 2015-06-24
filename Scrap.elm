@@ -24,9 +24,6 @@ new (x, y) = { default | position <- vec2 x y }
 
 --| Update |--------------------------------------------------------------------
 
-collision : Bullet -> Scrap -> Bool
-collision b s = distance b.position s.position < b.radius + s.radius
-
 damage : Scrap -> Scrap
 damage ({life} as scrap) = { scrap | life <- life - 1 }
 
