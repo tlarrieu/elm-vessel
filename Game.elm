@@ -11,30 +11,43 @@ import Window
 import Scrap exposing (Scrap)
 import Utils exposing (center, translate, randomPoint)
 import Vessel exposing (Vessel)
+import Bullet exposing (Bullet)
 
 --| Model |---------------------------------------------------------------------
 
 type Event =
-  Move (Int, Int)
+  Fire Time
+  | Move (Int, Int)
   | Refresh Time
   | Spawn Float
 type alias Dimension = (Int, Int)
-type alias Game = { vessel: Vessel , scraps: List Scrap }
+type alias Game =
+  { vessel: Vessel
+  , scraps: List Scrap
+  , bullets: List Bullet }
 
 background = (rgb 174 238 238)
 
 default =
   { vessel = Vessel.default
-  , scraps = [] }
+  , scraps = []
+  , bullets = []}
 
 --| Update |--------------------------------------------------------------------
 
 update : Event -> Game -> Game
 update event game  =
   case event of
+    Fire t -> fire game
     Move input -> move input game
     Refresh t -> refresh t game
     Spawn i -> spawn i game
+
+fire : Game -> Game
+fire ({vessel, scraps, bullets} as game) =
+  let bullets' =
+        List.map (\ scrap -> Bullet.new vessel.position scrap.position) scraps
+  in  { game | bullets <- List.append bullets bullets' }
 
 move : (Int, Int) -> Game -> Game
 move (x, y) game =
@@ -42,16 +55,17 @@ move (x, y) game =
   in  { game
       | vessel <- Vessel.setDestination destination game.vessel }
 
+collision : Bullet -> Scrap -> Bool
+collision b s = distance b.position s.position < b.radius + s.radius
+
 refresh : Time -> Game -> Game
-refresh dt game =
-  let vessel = Vessel.update dt game.vessel
-      dist = distance vessel.position
-      rad = (+) vessel.radius
-      hit scrap = dist scrap.position < rad scrap.radius
-      scraps = List.filter (not << hit) game.scraps
+refresh dt ({vessel, scraps, bullets } as game) =
+  let vessel' = Vessel.update dt vessel
+      hit bullet = List.any (collision bullet) scraps
+      bullets' = List.map (Bullet.update dt) <| List.filter (not << hit) bullets
   in  { game
-      | vessel <- vessel
-      , scraps <- scraps }
+      | vessel <- vessel'
+      , bullets <- bullets' }
 
 spawn : Float -> Game -> Game
 spawn i game =
@@ -68,6 +82,7 @@ scene (w,h) game =
         List.concat
           [ [drawBackground (w, h)]
           , List.map Scrap.draw game.scraps
+          , List.map Bullet.draw game.bullets
           , [Vessel.draw game.vessel] ]
       pos = middle
   in  container w h pos <| collage w h forms
