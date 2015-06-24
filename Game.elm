@@ -3,7 +3,7 @@ module Game where
 import Color exposing (rgb)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
-import Math.Vector2 exposing (distance, fromTuple)
+import Math.Vector2 exposing (fromTuple)
 import Signal exposing (..)
 import Time exposing (Time)
 import Window
@@ -47,7 +47,7 @@ update event game  =
 fire : Game -> Game
 fire ({vessel, scraps, bullets} as game) =
   let bullets' =
-        List.map (\ scrap -> Bullet.new vessel.position scrap.position) scraps
+        List.map (\scrap -> Bullet.new vessel.position scrap.position) scraps
   in  { game | bullets <- List.append bullets bullets' }
 
 move : (Int, Int) -> Game -> Game
