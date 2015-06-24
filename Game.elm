@@ -13,6 +13,7 @@ import Movement
 import Scrap exposing (Scrap)
 import Utils exposing (center, translate, randomPoint)
 import Vessel exposing (Vessel)
+import Weapon
 
 --| Model |---------------------------------------------------------------------
 
@@ -46,9 +47,11 @@ update event game  =
 
 fire : Game -> Game
 fire ({vessel, scraps, bullets} as game) =
-  let bullets' =
-        List.map (\scrap -> Bullet.new vessel.position scrap.position) scraps
-  in  { game | bullets <- List.append bullets bullets' }
+  let scraps' = Weapon.targets vessel scraps
+      bullets' =
+        List.map (\scrap -> Bullet.new vessel.position scrap.position) scraps'
+      bullets'' =  List.append bullets bullets'
+  in  { game | bullets <- bullets'' }
 
 move : (Int, Int) -> Game -> Game
 move (x, y) game =
@@ -63,7 +66,8 @@ refresh dt ({vessel, scraps, bullets } as game) =
         List.filter (not << Bullet.reachedTarget)
         <| List.map (Bullet.update dt)
         <| List.filter (not << Movement.anyCollision scraps) bullets
-      (hScraps, nhScraps) = List.partition (Movement.anyCollision bullets) scraps
+      (hScraps, nhScraps) =
+        List.partition (Movement.anyCollision bullets) scraps
       hScraps' =
         List.filter (not << Scrap.dead)
         <| List.map (Scrap.damage) hScraps

@@ -8,10 +8,11 @@ import Maybe exposing (..)
 import Time exposing (Time)
 
 import Movement exposing (Moving, Positionned, move)
+import Weapon exposing (Weaponed)
 
 --| Model |---------------------------------------------------------------------
 
-type alias Vessel = Moving (Circle {})
+type alias Vessel = Weaponed (Moving (Circle {}))
 
 default : Vessel
 default =
@@ -21,7 +22,8 @@ default =
   , destination = Nothing
   , radius = 20
   , stroke = 2
-  , color = rgb 255 167 0 }
+  , color = rgb 255 167 0
+  , weapon = Weapon.default }
 
 --| Update |--------------------------------------------------------------------
 
