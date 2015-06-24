@@ -55,17 +55,20 @@ move (x, y) game =
   in  { game
       | vessel <- Vessel.setDestination destination game.vessel }
 
-collision : Bullet -> Scrap -> Bool
-collision b s = distance b.position s.position < b.radius + s.radius
-
 refresh : Time -> Game -> Game
 refresh dt ({vessel, scraps, bullets } as game) =
   let vessel' = Vessel.update dt vessel
-      hit bullet = List.any (collision bullet) scraps
+      hit bullet = List.any (Scrap.collision bullet) scraps
       bullets' = List.map (Bullet.update dt) <| List.filter (not << hit) bullets
+      bullets'' = List.filter (not << Bullet.dead) bullets'
+      hit' scrap = List.any (\bullet -> Scrap.collision bullet scrap) bullets
+      (hScraps, nhScraps) = List.partition (hit') scraps
+      hScraps' = List.map (Scrap.damage) hScraps
+      hScraps'' = List.filter (not << Scrap.dead) hScraps'
   in  { game
       | vessel <- vessel'
-      , bullets <- bullets' }
+      , bullets <- bullets''
+      , scraps <- List.append nhScraps hScraps'' }
 
 spawn : Float -> Game -> Game
 spawn i game =

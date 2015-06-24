@@ -3,21 +3,35 @@ module Scrap where
 import Color exposing (rgb)
 import Drawing exposing (Circle, drawCircle)
 import Graphics.Collage exposing (Form)
-import Math.Vector2 exposing (vec2)
+import Math.Vector2 exposing (vec2, distance)
+
+import Bullet exposing (Bullet)
 
 --| Model |---------------------------------------------------------------------
 
-type alias Scrap = Circle {}
+type alias Scrap = Circle { life : Int }
 
 default : Scrap
 default =
   { position = vec2 -100 -100
   , color = rgb 255 0 190
   , radius = 15
-  , stroke = 1 }
+  , stroke = 1
+  , life = 4 }
 
 new : (Float, Float) -> Scrap
 new (x, y) = { default | position <- vec2 x y }
+
+--| Update |--------------------------------------------------------------------
+
+collision : Bullet -> Scrap -> Bool
+collision b s = distance b.position s.position < b.radius + s.radius
+
+damage : Scrap -> Scrap
+damage ({life} as scrap) = { scrap | life <- life - 1 }
+
+dead : Scrap -> Bool
+dead scrap = scrap.life == 0
 
 --| View |----------------------------------------------------------------------
 

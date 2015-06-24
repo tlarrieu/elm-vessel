@@ -12,9 +12,9 @@ event : Signal G.Event
 event =
   Signal.mergeMany
     [ G.Move <~ input
-    , G.Fire <~ Time.every (Time.millisecond * 500)
+    , G.Fire <~ Time.every (Time.millisecond * 300)
     , G.Refresh <~ ((\t -> t / 10) <~ Time.fps 60)
-    , G.Spawn <~ Time.every (Time.second) ]
+    , G.Spawn <~ Time.every (Time.second / 2) ]
 
 input : Signal (Int, Int)
 input =
