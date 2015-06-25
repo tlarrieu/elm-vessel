@@ -3,7 +3,7 @@ module Game where
 import Color exposing (rgb)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
-import Math.Vector2 exposing (fromTuple)
+import Math.Vector2 exposing (add, fromTuple, scale, toTuple)
 import Signal exposing (..)
 import Time exposing (Time)
 import Window
@@ -18,8 +18,9 @@ import Weapon
 --| Model |---------------------------------------------------------------------
 
 type Event =
-  Fire Time
-  | Move (Int, Int)
+  Fire Bool
+  | Click (Int, Int)
+  | Keys (Int, Int)
   | Refresh Time
   | Spawn Float
 type alias Dimension = (Int, Int)
@@ -38,10 +39,18 @@ default =
 --| Update |--------------------------------------------------------------------
 
 update : Event -> Game -> Game
-update event game  =
+update event ({vessel} as game)  =
   case event of
     Fire t -> fire game
-    Move input -> move input game
+    Click pos -> move pos game
+    Keys orientation ->
+      let vecOrientation =
+            fromTuple (toFloat (fst orientation), toFloat (snd orientation))
+          vecOrientation' = Math.Vector2.scale vessel.speed vecOrientation
+          position = vessel.position `add` vecOrientation'
+          position' = toTuple position
+          position'' = (round (fst position'), round (snd position'))
+      in  move position'' game
     Refresh t -> refresh t game
     Spawn i -> spawn i game
 
@@ -56,8 +65,7 @@ fire ({vessel, scraps, bullets} as game) =
 move : (Int, Int) -> Game -> Game
 move (x, y) game =
   let destination = fromTuple (toFloat x, toFloat y)
-  in  { game
-      | vessel <- Vessel.setDestination destination game.vessel }
+  in  { game | vessel <- Vessel.setDestination destination game.vessel }
 
 refresh : Time -> Game -> Game
 refresh dt ({vessel, scraps, bullets } as game) =
