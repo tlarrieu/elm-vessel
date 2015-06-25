@@ -3,23 +3,23 @@ module Game where
 import Color exposing (rgb)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
-import Math.Vector2 exposing (add, fromTuple, scale, toTuple)
+import Math.Vector2 as Vec exposing (add, fromTuple, toTuple)
 import Signal exposing (..)
 import Time exposing (Time)
 import Window
 
 import Bullet exposing (Bullet)
-import Movement
+import Movement exposing (Collidable)
 import Scrap exposing (Scrap)
-import Utils exposing (center, translate, randomPoint)
+import Utils exposing (center, translate, randomPoint, pairMap)
 import Vessel exposing (Vessel)
 import Weapon
 
 --| Model |---------------------------------------------------------------------
 
 type Event =
-  Fire Bool
-  | Click (Int, Int)
+  Click (Int, Int)
+  | Fire Bool
   | Keys (Int, Int)
   | Refresh Time
   | Spawn Float
@@ -42,15 +42,14 @@ update : Event -> Game -> Game
 update event ({vessel} as game)  =
   case event of
     Fire t -> fire game
-    Click pos -> move pos game
-    Keys orientation ->
-      let vecOrientation =
-            fromTuple (toFloat (fst orientation), toFloat (snd orientation))
-          vecOrientation' = Math.Vector2.scale vessel.speed vecOrientation
-          position = vessel.position `add` vecOrientation'
-          position' = toTuple position
-          position'' = (round (fst position'), round (snd position'))
-      in  move position'' game
+    Click dest -> move dest game
+    Keys direction ->
+      let movement =
+            Vec.scale vessel.speed
+            <| fromTuple
+            <| pairMap toFloat direction
+          dest = pairMap round <| toTuple <| vessel.position `add` movement
+      in  move dest game
     Refresh t -> refresh t game
     Spawn i -> spawn i game
 
@@ -65,25 +64,33 @@ fire ({vessel, scraps, bullets} as game) =
 move : (Int, Int) -> Game -> Game
 move (x, y) game =
   let destination = fromTuple (toFloat x, toFloat y)
-  in  { game | vessel <- Vessel.setDestination destination game.vessel }
+  in  { game
+      | vessel <- Vessel.setDestination destination game.vessel }
 
 refresh : Time -> Game -> Game
 refresh dt ({vessel, scraps, bullets } as game) =
-  let vessel' = Vessel.update dt vessel
-      bullets' =
-        List.filter (not << Bullet.reachedTarget)
-        <| List.map (Bullet.update dt)
-        <| List.filter (not << Movement.anyCollision scraps) bullets
-      (hScraps, nhScraps) =
-        List.partition (Movement.anyCollision bullets) scraps
+  { game
+  | vessel <- refreshVessel dt vessel
+  , bullets <- refreshBullets dt bullets scraps
+  , scraps <- refreshScraps dt scraps bullets }
+
+refreshVessel : Time -> Vessel -> Vessel
+refreshVessel dt vessel = Vessel.update dt vessel
+
+refreshBullets : Time -> List Bullet -> List (Collidable a) -> List Bullet
+refreshBullets dt bullets collidables =
+  List.filter (not << Bullet.reachedTarget)
+  <| List.map (Bullet.update dt)
+  <| List.filter (not << Movement.anyCollision collidables) bullets
+
+refreshScraps : Time -> List Scrap -> List (Collidable a) -> List Scrap
+refreshScraps dt scraps collidables =
+  let (hScraps, nhScraps) =
+        List.partition (Movement.anyCollision collidables) scraps
       hScraps' =
         List.filter (not << Scrap.dead)
         <| List.map (Scrap.damage) hScraps
-      scraps' = List.append nhScraps hScraps'
-  in  { game
-      | vessel <- vessel'
-      , bullets <- bullets'
-      , scraps <- scraps' }
+  in  List.append nhScraps hScraps'
 
 spawn : Float -> Game -> Game
 spawn i game =

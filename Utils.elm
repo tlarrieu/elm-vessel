@@ -18,3 +18,5 @@ randomPoint a =
       (pair, _) = Random.generate (Random.pair randX randY) seed
   in  pair
 
+pairMap : (a -> b) -> (a,a) -> (b,b)
+pairMap f (x,y) = (f x, f y)

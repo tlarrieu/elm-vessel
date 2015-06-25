@@ -1,6 +1,7 @@
 module Movement
   ( Moving
   , Positionned
+  , Collidable
   , anyCollision
   , collision
   , move
