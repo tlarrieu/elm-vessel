@@ -2,7 +2,7 @@ module Weapon where
 
 import Math.Vector2 exposing (distance)
 
-import Drawing exposing (Circle)
+import Circle exposing (Circle)
 
 type alias Weapon = { range : Float, quantity : Int }
 type alias Weaponed a = { a | weapon : Weapon }

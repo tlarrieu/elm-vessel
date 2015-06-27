@@ -1,7 +1,7 @@
 module Scrap where
 
 import Color exposing (rgb)
-import Drawing exposing (Circle, drawCircle)
+import Circle exposing (Circle)
 import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (vec2, distance)
 
@@ -33,4 +33,4 @@ dead scrap = scrap.life == 0
 --| View |----------------------------------------------------------------------
 
 draw : Scrap -> Form
-draw = drawCircle
+draw = Circle.draw

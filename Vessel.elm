@@ -1,7 +1,7 @@
 module Vessel where
 
 import Color exposing (rgb)
-import Drawing exposing (Circle, drawCircle)
+import Circle exposing (Circle)
 import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (..)
 import Maybe exposing (..)
@@ -36,4 +36,4 @@ setDestination = Movement.setDestination
 --| View |----------------------------------------------------------------------
 
 draw : Vessel -> Form
-draw = drawCircle
+draw = Circle.draw

@@ -1,4 +1,4 @@
-module Drawing where
+module Circle where
 
 import Color exposing (Color, rgb)
 import Graphics.Collage exposing (..)
@@ -11,8 +11,8 @@ type alias Circle a =
   , radius: Float
   , stroke: Float }
 
-drawCircle : Circle a -> Form
-drawCircle { position, color, radius, stroke } =
+draw : Circle a -> Form
+draw { position, color, radius, stroke } =
   let size = round <| (radius + 2) * 2 + stroke
       shape = circle radius
       color' =  filled color shape
