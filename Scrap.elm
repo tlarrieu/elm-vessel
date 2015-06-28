@@ -5,6 +5,8 @@ import Circle exposing (Circle)
 import Graphics.Collage exposing (Form)
 import Math.Vector2 exposing (vec2, distance)
 
+import QuadTree.Box as Box exposing (Box)
+
 import Bullet exposing (Bullet)
 
 --| Model |---------------------------------------------------------------------

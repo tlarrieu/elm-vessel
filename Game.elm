@@ -15,6 +15,9 @@ import Utils exposing (center, translate, randomPoint, pairMap)
 import Vessel exposing (Vessel)
 import Weapon
 
+import QuadTree.QuadTree as QuadTree exposing (QuadTree)
+import QuadTree.Box as Box
+
 --| Model |---------------------------------------------------------------------
 
 type Event =
@@ -27,14 +30,16 @@ type alias Dimension = (Int, Int)
 type alias Game =
   { vessel: Vessel
   , scraps: List Scrap
-  , bullets: List Bullet }
+  , bullets: List Bullet
+  , quadtree : QuadTree Scrap }
 
 background = (rgb 174 238 238)
 
 default =
   { vessel = Vessel.default
   , scraps = []
-  , bullets = [] }
+  , bullets = []
+  , quadtree = QuadTree.empty (Box.new (0, 0) 1000 600)  5 }
 
 --| Update |--------------------------------------------------------------------
 
@@ -94,21 +99,29 @@ refreshScraps dt scraps collidables =
 
 spawn : Float -> Game -> Game
 spawn i game =
-  let overcrowded = (List.length game.scraps) >= 100
+  let overcrowded = (List.length game.scraps) >= 5
       scrap = Scrap.new <| randomPoint <| round i
   in  if | overcrowded -> game
-         | otherwise -> { game | scraps <- scrap  :: game.scraps }
+         | otherwise ->
+           { game
+           | scraps <- scrap  :: game.scraps
+           , quadtree <- QuadTree.insert (toTuple scrap.position) scrap game.quadtree }
 
 --| View |----------------------------------------------------------------------
 
 scene : Dimension -> Game -> Element
 scene (w,h) game =
-  let forms =
+  let background = [drawBackground (w, h)]
+      units =
         List.concat
-          [ [drawBackground (w, h)]
-          , List.map Scrap.draw game.scraps
+          [ List.map Scrap.draw game.scraps
           , List.map Bullet.draw game.bullets
           , [Vessel.draw game.vessel] ]
+      test = QuadTree.draw game.quadtree
+      forms = List.concat
+        [ background
+        , units
+        , test ]
       pos = middle
   in  container w h pos <| collage w h forms
 
